@@ -13,6 +13,9 @@ Errata Updator
 ## Chuẩn bị:
 
 1. Clone repo này về:
+```sh
+git clone https://github.com/aperture147/errata-updator
+```
 
 2. Tạo venv và activate nó lên:
 ```sh
