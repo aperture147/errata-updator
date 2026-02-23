@@ -5,10 +5,10 @@ Errata Updator
 
 ## Tính năng:
 
-[x] Lọc Errata theo product, severity, thời gian
-[x] Exclude Errata theo keyword
-[ ] CLI để không phải modify code Python
-[ ] Custom template email theo mong muốn
+- [x] Lọc Errata theo product, severity, thời gian
+- [x] Exclude Errata theo keyword
+- [ ] CLI để không phải modify code Python
+- [ ] Custom template email theo mong muốn
 
 ## Chuẩn bị:
 
