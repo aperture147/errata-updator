@@ -32,6 +32,7 @@ fl = [
     "portal_synopsis",
     "portal_publication_date",
     "portal_update_date",
+    "abstract",
     "view_uri",
 ]
 
@@ -62,12 +63,13 @@ print(f"Total erratas after filtering: {len(erratas)}")
 
 with open("erratas.csv", "w", newline='') as f:
     writer = csv.writer(f)
-    writer.writerow(["ID", "Severity", "Synopsis", "Publication Date", "Update Date", "URL"])
+    writer.writerow(["ID", "Severity", "Synopsis", "Description", "Publication Date", "Update Date", "URL"])
     for e in erratas:
         writer.writerow([
             f"=HYPERLINK(\"{e['view_uri']}\", \"{e['id']}\")",
             e['portal_severity'],
             e['portal_synopsis'],
+            e['abstract'],
             e['portal_publication_date'].split('T')[0],
             e['portal_update_date'][0].split('T')[0],
             e['view_uri']
