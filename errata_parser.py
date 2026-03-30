@@ -19,10 +19,5 @@ def parse(errata_id: str):
     # CVEs
     cve_section = soup.find("div", id="cves")
     cves = ', '.join([a.get_text(strip=True) for a in cve_section.find_all("a")]) if cve_section else "N/A"
-
-    with open("test.txt", "w") as f:
-        f.write(f"Solution:\n{solution}\n\n")
-        f.write(f"CVEs:\n{cves}\n\n")
-        f.write(f"Fixes:\n{fixes}\n")
     
     return (solution, cves, fixes)
