@@ -1,10 +1,15 @@
 import requests
 from datetime import datetime, timedelta, time
 import csv
+import errata_parser
 
 CRITICAL_SEVERITY = 'Critical'
 IMPORTANT_SEVERITY = 'Important'
 MODERATE_SEVERITY = 'Moderate'
+
+RHSA_TYPE = 'Security Advisory'
+RHBA_TYPE = 'Bug Fix Advisory'
+RHEA_TYPE = 'Product Enhancement Advisory'
 
 SEVERITY_LIST = [CRITICAL_SEVERITY, IMPORTANT_SEVERITY]
 SEVERITY_SET = set(SEVERITY_LIST)
@@ -23,7 +28,7 @@ fq = [
     f'portal_publication_date:[{start_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")} TO {end_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")}]',
     'documentKind:("Errata")',
     f'portal_product_filter:{product_name}',
-    'portal_advisory_type:("Bug Fix Advisory")'
+    f'portal_advisory_type:("{RHBA_TYPE}")'
     # f'portal_severity:({" OR ".join(SEVERITY_LIST)})',
 ]
 fl = [
@@ -51,6 +56,7 @@ print(f'    - Severities: {", ".join(SEVERITY_LIST)}')
 resp = requests.get(url, params=params)
 
 data = resp.json()
+
 print(f"Total erratas fetched: {len(data['response']['docs'])}")
 print(f"Filtering erratas by keywords {', '.join(excluded_keywords)}...")
 erratas = sorted(data['response']['docs'], key=lambda e: e['portal_update_date'], reverse=True)
@@ -62,14 +68,20 @@ erratas = [
 print(f"Total erratas after filtering: {len(erratas)}")
 
 with open("erratas.csv", "w", newline='') as f:
-    writer = csv.writer(f)
-    writer.writerow(["ID", "Severity", "Synopsis", "Description", "Publication Date", "Update Date", "URL"])
+    writer = csv.writer(f, delimiter=';')
+    writer.writerow(["ID", "Severity", "Synopsis", "Description", "Solution", "CVEs", "Fixes", "Publication Date", "Update Date", "URL"])
     for e in erratas:
+        print(f"Processing errata {e['id']}...")
+        solution, cves, fixes = errata_parser.parse(e['id'])
+        print(f"Parsed errata {e['id']}")
         writer.writerow([
             f"=HYPERLINK(\"{e['view_uri']}\", \"{e['id']}\")",
             e['portal_severity'],
             e['portal_synopsis'],
             e['abstract'],
+            solution,
+            cves,
+            fixes,
             e['portal_publication_date'].split('T')[0],
             e['portal_update_date'][0].split('T')[0],
             e['view_uri']
